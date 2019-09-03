@@ -16,5 +16,7 @@ Vue.js + node/express + sqlite3 sample ,todo
 ***
 ### more
 
+https://kuc-arc-f.github.io/web-dev/2019/09/03/Vue-js-express-sqlite3-markdown-sample-todo8/
+
 ***
 
