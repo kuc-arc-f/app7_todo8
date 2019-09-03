@@ -1,0 +1,92 @@
+<div id="app">
+    <h1>todos - index</h1>
+    <hr />
+    <a class="btn btn-primary" href="/todos/new"> add</a>
+    <hr />
+    <div v-if="complete==0">
+        <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active">未完</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" v-on:click="set_complete(1)">完了済</a>
+        </li>
+        </ul>
+    </div>
+    <div v-else>
+        <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" v-on:click="set_complete(0)">未完</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active">完了済</a>
+        </li>
+        </ul>              
+    </div>    
+    <!-- -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">title</th>
+            <th scope="col">date</th>
+            <th scope="col">action</th>
+        </tr>
+        </thead>
+        <tbody v-for="task in tasks" v-bind:key="task.id">
+        <tr>
+            <td>
+                <h4>
+                <a v-bind:href="'/todos/show/' + task.id">{{ task.title }}</a><br />
+                </h4>
+            </td>
+            <td>{{ task.up_date }}</td>
+            <td>&nbsp;
+                <a v-bind:href="'/todos/edit/' + task.id" class="btn btn-outline-primary"> edit </a>
+            </td>
+        </tr>
+        </tbody>
+        </table>    
+</div>
+
+<!-- -->
+<script>
+new Vue({
+    el: '#app',
+    created () {
+        this.getTasks(0);
+//        console.log("#.index");
+    },    
+    data: {
+        msg : "aa-1234",
+        tasks: [],
+        complete : 0,
+    },
+    methods: {
+        getTasks (complete) {
+            var todos = []
+            axios.get("/api_todos/index").then(res =>  {
+//                this.tasks = res.data.docs
+                var items =res.data.docs
+                items.forEach( function (item) {
+                    if(item.complete == complete ){
+                        /* 
+                        var dt = item.up_date
+                        var s = new String(dt)                        
+                        item.date_str = s.substring(0, 10)
+                        */
+                        todos.push(item)
+                    }                    
+                });
+                this.tasks = todos                
+                console.log( this.tasks );
+            })        
+        },
+        set_complete(value) {
+            console.log(value)
+            this.complete = value
+            this.getTasks(value)
+        }        
+    }
+
+});
+</script>

@@ -1,0 +1,42 @@
+<div id="app">
+    <h1>Todos - show</h1>
+    <hr />
+    <h1>title : {{ item.title }}</h1>
+    <p style="margin-bottom: 20px;">Date: {{ item.date_str }}</p>
+    <hr />
+    <div v-html="item.content"></div>
+</div>
+
+<!-- -->
+<script>
+new Vue({
+    el: '#app',
+    created () {
+        var id = "<%= params_id %>";
+        this.getItem(id)
+    },    
+    data: {
+        item : [],
+        title:'',
+        content:''        
+    },
+    methods: {
+        getItem: function(id) {
+            axios.get("/api_todos/show/" + id )
+            .then(res =>  {
+                var dat = res.data.docs
+                console.log( dat )
+                this.item = dat[0];
+                /* 
+                var dt = this.item.up_date
+                var s = new String(dt)                        
+                this.item.date_str =  s.substring(0, 10)
+                */
+                this.item.content = marked( this.item.content );
+                console.log( dat )
+            })            
+        }
+    }
+
+});
+</script>

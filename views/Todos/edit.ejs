@@ -1,0 +1,92 @@
+<div id="app">
+    <h1>Tasks - edit</h1>
+    <hr />
+    <div class="form-group">
+        <label for="TopicTitle">タイトル</label>
+        <input type="text" class="form-control" id="title" v-model="title" >
+    </div>
+    <div class="form-group">
+        <label for="TopicContent">content</label>
+        <textarea class="form-control" id="content" rows="10" v-model="content"></textarea>
+    </div>
+    <button v-on:click="updateTask" class="btn btn-primary">更新</button>
+    <hr />    
+    <div v-if="complete==0">
+        <button v-on:click="set_complete(1);" class="btn btn-outline-success" >完了登録</button>
+    </div>
+    <div v-else>
+        <button v-on:click="set_complete(0);" class="btn btn-outline-success" >未完に戻す</button>            
+    </div>        
+    <hr />
+    <button v-on:click="deleteTask" class="btn btn-danger"> delete </button>
+
+</div>
+
+<!-- -->
+<script>
+new Vue({
+    el: '#app',
+    created () {
+        this.id = "<%= params_id %>";
+        this.getItem( this.id)
+    },    
+    data: {
+        item : [],
+        title:'',
+        content:'',
+        id: 0,    
+        complete : 0,    
+    },
+    methods: {
+        getItem: function(id) {
+            axios.get("/api_todos/show/" + id )
+            .then(res =>  {
+                var dat = res.data.docs
+                this.item = dat[0];
+                this.title = this.item.title
+                this.content = this.item.content
+                this.complete = this.item.complete
+                console.log( dat )
+            })            
+        },
+        updateTask: function () {
+        var task = {
+                'id' : this.id,
+                'title': this.title,
+                'content': this.content,
+                "complete" : this.complete
+            };
+            axios.post('/api_todos/update/', task ).then(res => {
+                console.log(res.data );
+                window.location.href = '/todos';
+            });
+
+        },
+        set_complete: function (value) {
+            var dat = this.get_sendItem( this.id, this.item );
+            dat.complete = value
+            axios.post('/api_todos/update/', dat ).then(res => {
+                console.log(res.data );
+                window.location.href = '/todos';
+            });   
+        },
+        get_sendItem: function (id, item) {
+            var ret = {
+                'id' :  id,
+                'title': item.title,
+                'content': item.content,
+                "complete" : item.complete
+            };
+            return ret;
+        },        
+        deleteTask: function () {
+            axios.get("/api_todos/delete/" +this.id )
+            .then(res =>  {
+                console.log( res.data );
+                window.location.href = '/todos';
+            })
+        }        
+    }
+
+});
+</script>
